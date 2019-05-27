@@ -2,16 +2,15 @@
 
 ### Start by creating an admin project. Official instructions [HERE](https://cloud.google.com/community/tutorials/managing-gcp-projects-with-terraform)
 
-Run this command from a cloud shell in the Org level with a user with ```Project Creator```
-
 ```
 export TF_VAR_org_id=$(gcloud organizations list | awk '!/^DISPLAY_NAME/ { print $2 }')
 export TF_VAR_billing_account=$(gcloud beta billing accounts list | grep -i true | awk '{ print $1 }')
 export TF_ADMIN=${USER}-terraform-admin
 export TF_CREDS=~/.config/gcloud/${USER}-terraform-admin.json
 
-In order to create projects, you will have to grant the org user
-
+```
+In order to create projects, you will have to grant the org user ```Project Creator```
+```
 # Create New Project
 gcloud projects create ${TF_ADMIN}-project \
   --organization ${TF_VAR_org_id} \
