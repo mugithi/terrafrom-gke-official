@@ -83,7 +83,6 @@ terraform {
  backend "gcs" {
    bucket  = "${TF_ADMIN}-project"
    prefix  = "terraform/state"
-   project = "${TF_ADMIN}-project"
  }
 }
 EOF
@@ -102,5 +101,12 @@ export GOOGLE_APPLICATION_CREDENTIALS=${TF_CREDS}
 export GOOGLE_PROJECT=${TF_ADMIN}-project
 ```
 
+### Install the latest version of Terrafrom 
+
+```
+sudo echo ;CURRR_VER=$(curl -s https://checkpoint-api.hashicorp.com/v1/check/terraform | jq -r -M '.current_version'); wget "https://releases.hashicorp.com/terraform/${CURRR_VER}/terraform_${CURRR_VER}_linux_amd64.zip" ; unzip terraform_${CURRR_VER}_linux_amd64.zip ; sudo mv terraform /usr/local/bin; terraform -v
+
+
+```
 
 
