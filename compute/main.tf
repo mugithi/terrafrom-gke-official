@@ -22,7 +22,7 @@ resource "google_compute_instance" "neo4j" {
    }
  }
  
-
+ // You must include this in the compute_instance resource that has the disk attached so that the attached disk can me modified independent of the compute_instance resouce
  lifecycle {
     ignore_changes = ["attached_disk"]
   }
