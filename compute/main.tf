@@ -1,47 +1,47 @@
-resource "google_compute_disk" "neo4j" {
-  count = 3
-  name  = "test-disk${count.index}"
-  type  = "pd-ssd"
-  zone         = "us-west1-a"
-  labels = {
-    environment = "dev"
-  }
-  physical_block_size_bytes = 4096
+variable "node_count" {
+  default = "3"
+ }
+
+variable "zone" {
+  default ="us-west1-a"
 }
 
-
-// A single Google Cloud Engine instance
-resource "google_compute_instance" "neo4j" {
- name         = "neo4j-compute-instance-dev"
- machine_type = "f1-micro"
- zone         = "us-west1-a"
-
- boot_disk {
-   initialize_params {
-     image = "debian-cloud/debian-9"
-   }
- }
- 
- // You must include this in the compute_instance resource that has the disk attached so that the attached disk can me modified independent of the compute_instance resouce
- lifecycle {
-    ignore_changes = ["attached_disk"]
-  }
-
- metadata_startup_script = "sudo apt-get update; sudo apt-get install -yq build-essential python-pip rsync; pip install flask"
-
- network_interface {
-   network = "default"
-
-   access_config {
-     // Include this section to give the VM an external ip address
-   }
- }
+variable "machine_type" {
+  default = "f1-micro"
 }
 
+variable "image" {
+  default ="debian-cloud/debian-9"
+}
+resource "google_compute_disk" "test-node-1-index-disk-" {
+    count   = "${var.node_count}"
+    name    = "test-node-1-index-disk-${count.index}-data"
+    type    = "pd-standard"
+    zone    = "${var.zone}"
+    size    = "5"
+}
+resource "google_compute_instance" "test-node-" {
+    count = "${var.node_count}"
+    name = "test-node-${count.index}"
+    machine_type = "${var.machine_type}"
+    zone = "${var.zone}"
 
-resource "google_compute_attached_disk" "neo4j" {
-  count = 3
-  disk = "${google_compute_disk.neo4j[count.index].self_link}"
-  instance = "${google_compute_instance.neo4j.self_link}"
-  device_name = "${count.index}" //Name which attached disk will be accessible from under /dev/disk/by-id/
+    boot_disk {
+    initialize_params {
+    image = "${var.image}"
+    }
+   }
+    attached_disk {
+        source      = "${element(google_compute_disk.test-node-1-index-disk-.*.self_link, count.index)}"
+        device_name = "${element(google_compute_disk.test-node-1-index-disk-.*.name, count.index)}"
+   }
+
+
+    network_interface {
+      network = "default"
+      access_config {
+        // Ephemeral IP
+      }
+
+    }
 }
