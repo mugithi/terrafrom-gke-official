@@ -1,0 +1,9 @@
+title: "Terraform Admin"
+description: "Terraform Admin Role"
+stage: "GA"
+includedPermissions:
+- billing.resourceAssociations.create
+- resourcemanager.projects.setIamPolicy
+- resourcemanager.projects.create
+- compute.subnetworks.setIamPolicy
+- compute.organizations.enableXpnResource
