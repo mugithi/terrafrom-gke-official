@@ -1,3 +1,65 @@
+# Manual Creation of Shared vpc
+
+## Grant the Network Admin role Shared VPC Admin Role at the Org Level 
+
+#### Compute Shared VPC admin
+```
+gcloud organizations add-iam-policy-binding ORGANIZATION_ID \
+  --member="user:example@customer.org" \
+  --role="roles/compute.xpnAdmin"
+```
+
+##### Service Networking Admin
+```
+gcloud organizations add-iam-policy-binding ORGANIZATION_ID \
+  --member="user:example@customer.org" \
+  --role="roles/servicenetworking.networksAdmin"
+```
+
+This permissions get inherited to all the projects created in the organisation 
+
+## Grant the Network Admin role of Owner of the Networking VPC Admin Role at the Org Level
+
+```
+gcloud projects add-iam-policy-binding PROJECT_ID \
+  --member="user:example@customer.org" \
+  --role="roles/owner"
+```
+
+## Enable Compute and Kubernetes API on host and service projects 
+
+```
+gcloud services enable compute.googleapis.com 
+gcloud services enable container.googleapis.com
+```
+
+## Grant Service Project user permissions of either owner/editor roles
+
+```
+gcloud projects add-iam-policy-binding PROJECT_ID \
+  --member="user:example@customer.org" \
+  --role="roles/owner"
+```
+
+## VPC Service Controls
+```
+gcloud organizations add-iam-policy-binding ORGANIZATION_ID \
+  --member="user:example@customer.org" \
+  --role="roles/resourcemanager.organizationViewer"
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Google Cloud Project Factory Terraform Module
 
 [FAQ](./docs/FAQ.md) | [Troubleshooting Guide](./docs/TROUBLESHOOTING.md) |
@@ -16,6 +78,34 @@ The current version is 2.X. The following guides are available to assist with up
 
 - [0.X -> 1.0](./docs/upgrading_to_project_factory_v1.0.md)
 - [1.X -> 2.0](./docs/upgrading_to_project_factory_v2.0.md)
+
+
+
+## Variables 
+How to collect Project Variables 
+
+### Project Variables
+```
+export TF_VAR_org_id=$(gcloud organizations list | awk '!/^DISPLAY_NAME/ { print $2 }')
+export TF_VAR_billing_account=$(gcloud beta billing accounts list | grep -i true | awk '{ print $1 }')
+export TF_ADMIN=${USER}-terraform-admin
+export TF_CREDS=~/.config/gcloud/${USER}-terraform-admin.json
+
+echo ORGID = $TF_VAR_org_id
+echo BILLING ACCOUNT = $TF_VAR_billing_account
+echo CREDENTIALS_FILE = $TF_CREDS
+```
+### Network Variables
+
+```
+gcloud compute networks subnets list --output json
+```
+
+### Install Terraform 
+```
+ export CURRR_VER=0.11.14
+ wget "https://releases.hashicorp.com/terraform/${CURRR_VER}/terraform_${CURRR_VER}_linux_amd64.zip" ; unzip terraform_${CURRR_VER}_linux_amd64.zip ; sudo mv terraform /usr/local/bin; terraform -v
+```
 
 ## Usage
 
