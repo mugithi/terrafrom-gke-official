@@ -60,6 +60,8 @@ gcloud services enable cloudbilling.googleapis.com
 gcloud services enable iam.googleapis.com
 gcloud services enable compute.googleapis.com
 gcloud services enable serviceusage.googleapis.com
+gcloud services enable appengine.googleapis.com
+gcloud services enable admin.googleapis.com
 ```
 
 ### Add Organization level permissions, ability to create projects and assign them to billing accounts
